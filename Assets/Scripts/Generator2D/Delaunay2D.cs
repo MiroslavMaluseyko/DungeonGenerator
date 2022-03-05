@@ -29,6 +29,8 @@ namespace Generator2d
 
         private void Triangulate()
         {
+            
+            //Making super triangle
             float minX = Vertices[0].Position.x;
             float minY = Vertices[0].Position.y;
             float maxX = minX;
@@ -48,14 +50,17 @@ namespace Generator2d
 
             Vertex v1 = new Vertex(new Vector2(minX - 1, minY - 1));
             Vertex v2 = new Vertex(new Vector2(minX - 1, maxY + deltaMax));
-            Vertex v3 = new Vertex(new Vector2(minX + deltaMax, minY - 1));
+            Vertex v3 = new Vertex(new Vector2(maxX + deltaMax, minY - 1));
 
             Triangles.Add(new Triangle(v1,v2,v3));
 
+            
             foreach (var vertex in Vertices)
             {
                 List<Edge> polygon = new List<Edge>();
 
+                //if vertex lies in circum circle of triangle delete it
+                //make polygon with edges of deleted triangles
                 foreach (var t in Triangles)
                 {
                     if (t.CircumCircleContains(vertex))
@@ -69,11 +74,14 @@ namespace Generator2d
 
                 Triangles.RemoveAll(t => t.isBad);
 
+                
+                //two edges equal means they are inside polygon
+                //delete both of them
                 for (int i = 0; i < polygon.Count; i++)
                 {
                     for (int j = i + 1; j < polygon.Count; j++)
                     {
-                        if (Edge.AlmostEqual(polygon[i], polygon[j]))
+                        if (polygon[i] == polygon[j])
                         {
                             polygon[i].isBad = true;
                             polygon[j].isBad = true;
@@ -83,14 +91,18 @@ namespace Generator2d
 
                 polygon.RemoveAll(e => e.isBad);
 
+                //divide polygon to triangles with current vertex
                 foreach (var edge in polygon)
                 {
                     Triangles.Add(new Triangle(edge.U, edge.V, vertex));
                 }
             }
 
+            
+            //delete super triangle and triangles lying on his vertixes
             Triangles.RemoveAll(t => t.ContainsVertex(v1) || t.ContainsVertex(v2) || t.ContainsVertex(v3));
             
+            //divide triangles to edges
             HashSet<Edge> edgeSet = new HashSet<Edge>();
 
             foreach (var t in Triangles) {

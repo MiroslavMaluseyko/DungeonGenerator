@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEngine;
 
 namespace Generator2d
@@ -13,7 +14,7 @@ namespace Generator2d
         {
             Size = size;
 
-            data = new T[size.x * size.y];
+            data = new T[size.x * size.y + 1];
         }
 
         public int GetIndex(Vector2Int pos)
@@ -34,9 +35,13 @@ namespace Generator2d
 
         public T this[Vector2Int pos]
         {
-            get { return data[GetIndex(pos)]; }
+            get
+            {
+                return data[GetIndex(pos)];
+            }
             set { data[GetIndex(pos)] = value; }
         }
+
 
     }
 

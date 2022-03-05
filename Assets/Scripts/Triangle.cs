@@ -7,16 +7,11 @@ namespace Graphs
 {
     public class Triangle
     {
-        public Vertex A { get; set; }
-        public Vertex B { get; set; }
-        public Vertex C { get; set; }
+        public Vertex A { get; private set; }
+        public Vertex B { get; private set; }
+        public Vertex C { get; private set; }
         
         public bool isBad { get; set; }
-
-        public Triangle()
-        {
-            
-        }
 
         public Triangle(Vertex a, Vertex b, Vertex c)
         {
@@ -66,7 +61,6 @@ namespace Graphs
                 ((a.B == b.A) || (a.B == b.B) || (a.B == b.C)) &&
                 ((a.C == b.A) || (a.C == b.B) || (a.C == b.C));
         }
-        
         
         public static bool operator !=(Triangle a, Triangle b) {
             return !(a == b);
