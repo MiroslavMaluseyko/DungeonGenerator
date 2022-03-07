@@ -155,6 +155,14 @@ MonoBehaviour:
   wall: {fileID: 936655011711489263, guid: 5e10be2f5a748844dbd0b2b7e6fafd4a, type: 3}
   arc: {fileID: 2032561896364673397, guid: 867c307861a2f9244bc4a3434c515f1c, type: 3}
   floor: {fileID: 2021926822154840307, guid: 0d780173c250d334f80c9061373c8e4f, type: 3}
+  hall: {fileID: 1907596199301443059, guid: d468aca3a4ae71b46a917597c89e70ac, type: 3}
+  hallCenter: {fileID: 821697842945867528, guid: ad723011623795149ab723c33c434c37, type: 3}
+  hallWall: {fileID: 4161654591381885820, guid: c7af5921109b94141afd37e9fdd75443, type: 3}
+  holeFix1: {fileID: 3755715193106746046, guid: 5e0793aa91d1c1248a76c8bb8a68d3ca, type: 3}
+  holeFix2: {fileID: 867380262002307653, guid: 192d681e9fa59ee41a375fd1339fa347, type: 3}
+  pillar: {fileID: 4342671295866585447, guid: 27f210ed52b6c0f409f410ac194d0a7c, type: 3}
+  stairsUp: {fileID: 6404306957148776316, guid: 1e5e6584f4b365c49a0edc23ccafc87b, type: 3}
+  stairsDown: {fileID: 8702035252243360985, guid: 01758e662295c9347b35b7bdee71f5b4, type: 3}
 --- !u!4 &330124540
 Transform:
   m_ObjectHideFlags: 0

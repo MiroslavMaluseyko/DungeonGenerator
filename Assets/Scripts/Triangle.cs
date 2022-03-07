@@ -35,22 +35,23 @@ namespace Graphs
             float xab = a.x - b.x;
             float xbc = b.x - c.x;
             float xca = c.x - a.x;
-            float yab = a.y - b.y;
-            float ybc = b.y - c.y;
-            float yca = c.y - a.y;
-            float za = Mathf.Pow(a.x,2f) + Mathf.Pow(a.y,2f);
-            float zb = Mathf.Pow(b.x,2f) + Mathf.Pow(b.y,2f);
-            float zc = Mathf.Pow(c.x,2f) + Mathf.Pow(c.y,2f);
+            float yab = a.z - b.z;
+            float ybc = b.z - c.z;
+            float yca = c.z - a.z;
+            float za = Mathf.Pow(a.x,2f) + Mathf.Pow(a.z,2f);
+            float zb = Mathf.Pow(b.x,2f) + Mathf.Pow(b.z,2f);
+            float zc = Mathf.Pow(c.x,2f) + Mathf.Pow(c.z,2f);
 
             float zx = yab * zc + ybc * za + yca * zb;
             float zy = xab * zc + xbc * za + xca * zb;
             float z = xab * yca - yab * xca;
 
-            Vector3 center = new Vector3(-zx/z/2, zy/z/2);
+            Vector3 center = new Vector3(-zx/z/2, a.y,zy/z/2);
 
             float radius = Vector3.SqrMagnitude(a - center);
             float distance = Vector3.SqrMagnitude(v.Position - center);
 
+            
             return distance <= radius;
         }
 

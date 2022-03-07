@@ -3,7 +3,7 @@ using Graphs;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Generator2d
+namespace Generator2D
 {
     public class Delaunay2D
     {
@@ -11,8 +11,8 @@ namespace Generator2d
         public List<Vertex> Vertices { get; private set; }
         
         public List<Edge> Edges { get; private set; }
-        
-        public List<Triangle> Triangles { get; private set; }
+
+        private List<Triangle> Triangles;
 
         public Delaunay2D()
         {
@@ -32,25 +32,25 @@ namespace Generator2d
             
             //Making super triangle
             float minX = Vertices[0].Position.x;
-            float minY = Vertices[0].Position.y;
+            float minY = Vertices[0].Position.z;
             float maxX = minX;
             float maxY = minY;
 
             foreach (var vert in Vertices)
             {
                 minX = Math.Min(minX, vert.Position.x);
-                minY = Math.Min(minY, vert.Position.y);
+                minY = Math.Min(minY, vert.Position.z);
                 maxX = Math.Max(maxX, vert.Position.x);
-                maxY = Math.Max(maxY, vert.Position.y);
+                maxY = Math.Max(maxY, vert.Position.z);
             }
 
             float dx = maxX - minX;
             float dy = maxY - minY;
             float deltaMax = Math.Max(dx, dy) * 2;
 
-            Vertex v1 = new Vertex(new Vector2(minX - 1, minY - 1));
-            Vertex v2 = new Vertex(new Vector2(minX - 1, maxY + deltaMax));
-            Vertex v3 = new Vertex(new Vector2(maxX + deltaMax, minY - 1));
+            Vertex v1 = new Vertex(new Vector3(minX - 1, Vertices[0].Position.y, minY - 1));
+            Vertex v2 = new Vertex(new Vector3(minX - 1, Vertices[0].Position.y, maxY + deltaMax));
+            Vertex v3 = new Vertex(new Vector3(maxX + deltaMax, Vertices[0].Position.y, minY - 1));
 
             Triangles.Add(new Triangle(v1,v2,v3));
 

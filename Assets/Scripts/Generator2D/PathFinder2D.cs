@@ -4,7 +4,7 @@ using BlueRaja;
 using Graphs;
 using UnityEngine;
 
-namespace Generator2d
+namespace Generator2D
 {
     public class PathFinder2D
     {
@@ -49,30 +49,17 @@ namespace Generator2d
 
         private List<Node> Neighbours(Node node)
         {
+            Vector2Int v = Vector2Int.up;
             List<Node> res = new List<Node>();
-            Vector2Int neigh = node.Position + Vector2Int.up;
-            if (neigh.x < grid.Size.x && neigh.y < grid.Size.y &&
-                neigh.x > 0 && neigh.y > 0)
+            for (int i = 0; i < 4; i++)
             {
-                res.Add(grid[neigh]);
-            }
-            neigh = node.Position + Vector2Int.down;
-            if (neigh.x < grid.Size.x && neigh.y < grid.Size.y &&
-                neigh.x > 0 && neigh.y > 0)
-            {
-                res.Add(grid[neigh]);
-            }
-            neigh = node.Position + Vector2Int.left;
-            if (neigh.x < grid.Size.x && neigh.y < grid.Size.y &&
-                neigh.x > 0 && neigh.y > 0)
-            {
-                res.Add(grid[neigh]);
-            }
-            neigh = node.Position + Vector2Int.right;
-            if (neigh.x < grid.Size.x && neigh.y < grid.Size.y &&
-                neigh.x > 0 && neigh.y > 0)
-            {
-                res.Add(grid[neigh]);
+                Vector2Int neigh = node.Position + v;
+                if (neigh.x < grid.Size.x && neigh.y < grid.Size.y &&
+                    neigh.x > 0 && neigh.y > 0)
+                {
+                    res.Add(grid[neigh]);
+                }
+                v.Set(v.y, -v.x);
             }
 
             return res;

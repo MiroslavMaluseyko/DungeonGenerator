@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
-namespace Generator2d
+namespace Generator2D
 {
     public enum WallType
     {

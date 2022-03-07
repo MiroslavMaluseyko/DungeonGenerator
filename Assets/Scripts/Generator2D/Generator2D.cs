@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Graphs;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Random = System.Random;
 
-namespace Generator2d
+namespace Generator2D
 {
     public class Generator2D
     {
@@ -70,8 +66,8 @@ namespace Generator2d
                 //generate room size
                 Vector2Int roomSize = new Vector2Int
                     (
-                        Random.Next(settings.roomMinSize.x, settings.roomMaxSize.x),
-                        Random.Next(settings.roomMinSize.y, settings.roomMaxSize.y)
+                        Random.Next(settings.roomMinSize.x, settings.roomMaxSize.x + 1),
+                        Random.Next(settings.roomMinSize.y, settings.roomMaxSize.y + 1)
                     );
                 //should the room be created
                 bool toAdd = true;
@@ -92,7 +88,7 @@ namespace Generator2d
 
                 //check if this room in generator bounds
                 if (newRoom.bounds.xMin < 0 || newRoom.bounds.xMax > settings.size.x ||
-                    newRoom.bounds.yMin < 0 || newRoom.bounds.yMax > settings.size.y)
+                    newRoom.bounds.zMin < 0 || newRoom.bounds.zMax > settings.size.y)
                 {
                     toAdd = false;
                 }
@@ -117,12 +113,12 @@ namespace Generator2d
                            Vector2Int v = Vector2Int.right;
                            Tiles[pos][v] = WallType.Wall;
                        }
-                       if (pos.y == newRoom.bounds.yMin)
+                       if (pos.y == newRoom.bounds.zMin)
                        {
                            Vector2Int v = Vector2Int.down;
                            Tiles[pos][v] = WallType.Wall;
                        }
-                       if (pos.y == newRoom.bounds.yMax - 1)
+                       if (pos.y == newRoom.bounds.zMax - 1)
                        {
                            Vector2Int v = Vector2Int.up;
                            Tiles[pos][v] = WallType.Wall;
@@ -141,7 +137,6 @@ namespace Generator2d
             foreach (var room in Rooms)
             {
                 vertices.Add(new Vertex<Room>(room.bounds.center, room));
-                
             }
 
             delaunay = Delaunay2D.Triangulate(vertices);
@@ -167,69 +162,71 @@ namespace Generator2d
             List<Tuple<PathFinder2D.Node, PathFinder2D.Node>> edges = new List<Tuple<PathFinder2D.Node, PathFinder2D.Node>>();
             foreach (var edge in selectedEdges)
             {
-                Vector2Int start = new Vector2Int((int) edge.U.Position.x, (int) edge.U.Position.y); 
-                Vector2Int end = new Vector2Int((int) edge.V.Position.x, (int) edge.V.Position.y);
-                foreach (var pair in pathFinder.FindPath(start, end, Heuristic))
+                Vector2Int start = new Vector2Int((int) edge.U.Position.x, (int) edge.U.Position.z); 
+                Vector2Int end = new Vector2Int((int) edge.V.Position.x, (int) edge.V.Position.z);
+                var list = pathFinder.FindPath(start, end, Heuristic);
+                foreach (var pair in list)
                 {
                     edges.Add(pair);
                     if (Grid[pair.Item1.Position] != CellState.Room)
                     {
                         Grid[pair.Item1.Position] = CellState.Path;
+                        Hallways.Add(pair.Item1.Position);
                     }
                 }
             }
             foreach (var pair in edges)
+            {
+                Vector2Int pos1 = pair.Item1.Position;
+                Vector2Int pos2 = pair.Item2.Position;
+                if (Grid[pos1] != CellState.Room)
                 {
-                    Vector2Int pos1 = pair.Item1.Position;
-                    Vector2Int pos2 = pair.Item2.Position;
-                    if (Grid[pos1] != CellState.Room)
-                    {
 
-                        if (Grid[pos2] == CellState.Room)
-                        {
-                            Tiles[pos1][pos2 - pos1] = WallType.Door;
-                            Tiles[pos2][pos1 - pos2] = WallType.Door;
-                        }
-                    }
-                    else
+                    if (Grid[pos2] == CellState.Room)
                     {
-
-                        if (Grid[pos2] == CellState.Path)
-                        {
-                            Tiles[pos1][pos2 - pos1] = WallType.Door;
-                            Tiles[pos2][pos1 - pos2] = WallType.Door;
-                        }
-                        
+                        Tiles[pos1][pos2 - pos1] = WallType.Door;
+                        Tiles[pos2][pos1 - pos2] = WallType.Door;
                     }
                 }
-                
-                foreach (var pair in edges)
+                else
                 {
-                    Vector2Int pos = pair.Item1.Position;
-                    if (Grid[pos] != CellState.Room)
-                    {
-                        foreach (var v in new Vector2Int[] {Vector2Int.up, Vector2Int.down,Vector2Int.left,Vector2Int.right})
-                        {
-                            Vector2Int posN = pos + v;
-                            if (Grid.InBounds(posN))
-                            {
-                                if (Grid[posN] == CellState.Room)
-                                {
-                                    if (Tiles[pos][v] != WallType.Door) Tiles[pos][v] = WallType.Wall;
-                                }
 
-                                if (Grid[posN] == CellState.Empty)
-                                {
-                                    Tiles[pos][v] = WallType.Wall;
-                                }
+                    if (Grid[pos2] == CellState.Path)
+                    {
+                        Tiles[pos1][pos2 - pos1] = WallType.Door;
+                        Tiles[pos2][pos1 - pos2] = WallType.Door;
+                    }
+                    
+                }
+            }
+            
+            foreach (var pair in edges)
+            {
+                Vector2Int pos = pair.Item1.Position;
+                if (Grid[pos] != CellState.Room)
+                {
+                    foreach (var v in new Vector2Int[] {Vector2Int.up, Vector2Int.down,Vector2Int.left,Vector2Int.right})
+                    {
+                        Vector2Int posN = pos + v;
+                        if (Grid.InBounds(posN))
+                        {
+                            if (Grid[posN] == CellState.Room)
+                            {
+                                if (Tiles[pos][v] != WallType.Door) Tiles[pos][v] = WallType.Wall;
                             }
-                            else
+
+                            if (Grid[posN] == CellState.Empty)
                             {
                                 Tiles[pos][v] = WallType.Wall;
                             }
                         }
+                        else
+                        {
+                            Tiles[pos][v] = WallType.Wall;
+                        }
                     }
                 }
+            }
 
         }
 
@@ -244,7 +241,7 @@ namespace Generator2d
             {
                 res += 5;
             }else
-            if (Grid[n2.Position] == CellState.Room)
+            if (Grid[n2.Position] == CellState.Path)
             {
                 res += 1;
             }

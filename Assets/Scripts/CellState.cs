@@ -1,4 +1,4 @@
-﻿namespace Generator2d
+﻿namespace Generator2D
 {
     public enum CellState
     {
@@ -8,10 +8,16 @@
     }
 }
 
-namespace Generator3d
+namespace Generator3D
 {
     public enum CellState
     {
-        
+        Empty,
+        Room,
+        Path,
+        StairsStart,
+        StairsEnd,
+        StairsBot,
+        Space
     }
 }

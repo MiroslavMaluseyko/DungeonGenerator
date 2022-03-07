@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Generator2d
+namespace Generator2D
 {
 
     [CreateAssetMenu(fileName = "GenerationSettings2D", menuName = "Settings Block/Generation Settings 2D")]

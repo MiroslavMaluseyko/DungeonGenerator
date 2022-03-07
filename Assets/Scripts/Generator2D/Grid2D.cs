@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Generator2d
+namespace Generator2D
 {
     public class Grid2D<T>
     {
@@ -40,6 +40,15 @@ namespace Generator2d
                 return data[GetIndex(pos)];
             }
             set { data[GetIndex(pos)] = value; }
+        }
+        
+        public T this[Vector3Int pos]
+        {
+            get
+            {
+                return data[GetIndex(new Vector2Int(pos.x,pos.z))];
+            }
+            set { data[GetIndex(new Vector2Int(pos.x,pos.z))] = value; }
         }
 
 
