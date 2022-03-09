@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
 using Node = Generator3D.PathFinder3D.Node;
+using Object = UnityEngine.Object;
 
 namespace Generator3D
 {
@@ -13,20 +14,21 @@ namespace Generator3D
         private List<Edge> selectedEdges;
         public Grid3D<CellState> Grid { get; private set; }
         public List<Room> Rooms { get; private set; }
-        public List<Vector3Int> Hallways { get; private set; }
+        public List<Tuple<Vector3Int, Vector3Int>> Hallways { get; private set; }
+        public List<Tuple<Vector3Int, Vector3Int>> Stairs { get; private set; }
 
         public Random Random { get; private set; }
 
         private Delaunay3D delaunay;
         public Generator3D(GenerationSettings3D settings)
         {
-            this.settings = ScriptableObject.CreateInstance<GenerationSettings3D>();
-            this.settings.SetFields(settings);
+            this.settings = ScriptableObject.Instantiate(settings);
             Random = new Random(settings.seed.GetHashCode());
             Grid = new Grid3D<CellState>(settings.size);
             Rooms = new List<Room>();
+            Stairs = new List<Tuple<Vector3Int, Vector3Int>>();
             selectedEdges = new List<Edge>();
-            Hallways = new List<Vector3Int>();
+            Hallways = new List<Tuple<Vector3Int, Vector3Int>>();
         }
 
         public void Generate()
@@ -35,6 +37,7 @@ namespace Generator3D
             Triangulate();
             CreateHallways();
             FindPaths();
+
         }
         
         private void PlaceRooms()
@@ -137,52 +140,58 @@ namespace Generator3D
                     
                     Vector3Int p1 = pair.Item1.Position;
                     Vector3Int p2 = pair.Item2.Position;
-                    //edges.Add(pair);
+                    if (p1.y != p2.y)
+                    {
+                        if (p1.y > p2.y)
+                        {
+                            (p1, p2) = (p2, p1);
+                        }
+                        Vector3Int horDir = (p2 - p1);
+                        horDir.Clamp(new Vector3Int(-1, 0, -1), new Vector3Int(1, 0, 1));
+                        Vector3Int verDir = new Vector3Int(0, p2.y - p1.y, 0);
+                        Grid[p1 + horDir           ] = CellState.StairsStart;
+                        Grid[p1 + horDir*2         ] = CellState.StairsBot;
+                        Grid[p1 + horDir   + verDir] = CellState.Space;
+                        Grid[p1 + horDir*2 + verDir] = CellState.StairsEnd;
+                        Stairs.Add(new Tuple<Vector3Int, Vector3Int>(p1 + horDir, horDir));
+                    }
+                    
                     if (Grid[p1] != CellState.Room)
                     {
-                        if (p1.y != p2.y)
-                        {
-                            if (p1.y > p2.y)
-                            {
-                                (p1, p2) = (p2, p1);
-                            }
-                            Vector3Int horDir = (p2 - p1);
-                            horDir.Clamp(new Vector3Int(-1, 0, -1), new Vector3Int(1, 0, 1));
-                            Vector3Int verDir = new Vector3Int(0, p2.y - p1.y, 0);
-                            Grid[p1 + horDir] = CellState.StairsStart;
-                            Grid[p1 + horDir*2] = CellState.StairsBot;
-                            Grid[p1 + horDir + verDir] = CellState.Space;
-                            Grid[p1 + horDir*2 + verDir] = CellState.StairsEnd;
-                        }
-                        else
-                        {
-                            Grid[p1] = CellState.Path;
-                            Hallways.Add(p1);
-                            Grid[p2] = CellState.Path;
-                            Hallways.Add(p2);
-                        }
+                        Grid[p1] = CellState.Path;
                     }
+
+                    if (Grid[p2] != CellState.Room)
+                    {
+                        Grid[p2] = CellState.Path;
+                    }
+                    Hallways.Add(new Tuple<Vector3Int, Vector3Int>(p1,p2));
+                    
                 }
             }
         }
         
-        private float Heuristic(PathFinder3D.Node n1, PathFinder3D.Node n2)
+        private float Heuristic(Node n1, Node n2)
         {
             
             float res = Vector3.Distance(n1.Position,n2.Position);
             if (Grid[n2.Position] == CellState.Room)
             {
-                res += 10;
+                res += settings.roomCost;
             }else
             if (Grid[n2.Position] == CellState.Empty)
             {
-                res += 5;
+                res += settings.emptyCellCost;
             }else
             if (Grid[n2.Position] == CellState.Path)
             {
-                res += 1;
+                res += settings.pathCost;
             }
-            
+
+            if (n1.Position != n2.Position)
+            {
+                res += settings.stairsCost;
+            }
 
             return res;
         }
@@ -191,17 +200,24 @@ namespace Generator3D
         private List<Vector3Int> Neighbours(Node node)
         {
             List<Vector3Int> res = new List<Vector3Int>();
-        
+
+            if (Grid[node.Position] == CellState.StairsBot   ||
+                Grid[node.Position] == CellState.StairsStart ||
+                Grid[node.Position] == CellState.StairsEnd   ||
+                Grid[node.Position] == CellState.Space)
+            {
+                return res;
+            }
+
             Vector3Int v = Vector3Int.left;
             Vector3Int neigh;
             for (int i = 0; i < 4; i++)
             {
                 neigh = node.Position + v;
                 if(Grid.InBounds(neigh) &&
-                   Grid[neigh] != CellState.StairsBot &&
-                   Grid[neigh] != CellState.StairsStart &&
-                   Grid[neigh] != CellState.StairsEnd &&
-                   Grid[neigh] != CellState.Space)
+                   (Grid[neigh] == CellState.Room ||
+                    Grid[neigh] == CellState.Empty ||
+                    Grid[neigh] == CellState.Path))
                 {
                     res.Add(neigh);
                 }
@@ -217,7 +233,8 @@ namespace Generator3D
                     neigh = node.Position + dir + v + v + v;
                     if (Grid.InBounds(neigh) && CanBeStairs(neigh, node.Position))
                     {
-                        res.Add(neigh);
+                        if (Grid[neigh] != CellState.Room)
+                            res.Add(neigh);
                     }
 
                     v.Set(v.z, v.y, -v.x);
@@ -233,18 +250,21 @@ namespace Generator3D
 
         private bool CanBeStairs(Vector3Int p1, Vector3Int p2)
         {
+            if(!(Grid[p1] == CellState.Room ||
+                 Grid[p1] == CellState.Empty ||
+                 Grid[p1] == CellState.Path))
+            {
+                return false;
+            }
+            
             
             if (p1.y > p2.y)
             {
-                p1 = p2;
+                (p1, p2) = (p2, p1);
             }
             Vector3Int dir = new Vector3Int(p2.x - p1.x, 0, p2.z - p1.z);
             dir.Clamp(new Vector3Int(-1,0,-1),new Vector3Int(1,0,1));
             
-
-            if (!(Grid[p1] == CellState.Room || Grid[p1] == CellState.Empty || Grid[p1] == CellState.Path ||
-                  Grid[p1] == CellState.Room || Grid[p1] == CellState.Empty || Grid[p1] == CellState.Path))
-                return false;
             Vector3Int v = Vector3Int.up;
 
             if (Grid[p1 + dir        ] == CellState.Empty &&
@@ -254,8 +274,8 @@ namespace Generator3D
                 return true;
             
             if (Grid[p1 + dir] == CellState.StairsStart &&
-                Grid[p1 + dir * 2] == CellState.StairsEnd &&
-                Grid[p1 + dir + v] == CellState.StairsBot &&
+                Grid[p1 + dir + v] == CellState.Space &&
+                Grid[p1 + dir * 2] == CellState.StairsBot &&
                 Grid[p1 + dir * 2 + v] == CellState.StairsEnd)
                 return true;
             return false;

@@ -11,7 +11,7 @@ namespace Graphs
         public Vertex B { get; private set; }
         public Vertex C { get; private set; }
         
-        public bool isBad { get; set; }
+        public bool IsBad { get; set; }
 
         public Triangle(Vertex a, Vertex b, Vertex c)
         {

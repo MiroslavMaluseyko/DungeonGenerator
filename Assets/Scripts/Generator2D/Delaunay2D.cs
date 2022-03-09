@@ -65,14 +65,14 @@ namespace Generator2D
                 {
                     if (t.CircumCircleContains(vertex))
                     {
-                        t.isBad = true;
+                        t.IsBad = true;
                         polygon.Add(new Edge(t.A, t.B));
                         polygon.Add(new Edge(t.B, t.C));
                         polygon.Add(new Edge(t.C, t.A));
                     }
                 }
 
-                Triangles.RemoveAll(t => t.isBad);
+                Triangles.RemoveAll(t => t.IsBad);
 
                 
                 //two edges equal means they are inside polygon

@@ -5,13 +5,22 @@ using UnityEngine;
 
 namespace Generator3D
 {
+
     public class Delaunay3D
     {
+
         private List<Vertex> Vertices;
         private List<Tetrahedron> Tetras;
-        
         public List<Edge> Edges { get; private set; }
-        
+        public List<Triangle> Triangles { get; private set; }
+
+        Delaunay3D()
+        {
+            Edges = new List<Edge>();
+            Triangles = new List<Triangle>();
+            Tetras = new List<Tetrahedron>();
+        }
+
         public static Delaunay3D Triangulate(List<Vertex> vertices)
         {
             Delaunay3D delaunay = new Delaunay3D();
@@ -22,7 +31,7 @@ namespace Generator3D
             return delaunay;
         }
 
-        private void Triangulate()
+        void Triangulate()
         {
             float minX = Vertices[0].Position.x;
             float minY = Vertices[0].Position.y;
@@ -40,18 +49,18 @@ namespace Generator3D
                 maxY = Math.Max(maxY, vert.Position.y);
                 maxZ = Math.Max(maxZ, vert.Position.z);
             }
-            
+
             float dx = maxX - minX;
             float dy = maxY - minY;
             float dz = maxZ - minZ;
             float deltaMax = Mathf.Max(dx, dy, dz) * 2;
 
-            Vertex v1 = new Vertex(new Vector3(minX - 1,  minY - 1, minZ - 1));
-            Vertex v2 = new Vertex(new Vector3(minX + deltaMax,  minY - 1, minZ - 1));
-            Vertex v3 = new Vertex(new Vector3(minX - 1,  minY + deltaMax, minZ - 1));
-            Vertex v4 = new Vertex(new Vector3(minX - 1,  minY - 1, minZ + deltaMax));
+            Vertex v1 = new Vertex(new Vector3(minX - 1, minY - 1, minZ - 1));
+            Vertex v2 = new Vertex(new Vector3(maxX + deltaMax, minY - 1, minZ - 1));
+            Vertex v3 = new Vertex(new Vector3(minX - 1, maxY + deltaMax, minZ - 1));
+            Vertex v4 = new Vertex(new Vector3(minX - 1, minY - 1, maxZ + deltaMax));
 
-            Tetras.Add(new Tetrahedron(v1,v2,v3,v4));
+            Tetras.Add(new Tetrahedron(v1, v2, v3, v4));
 
             foreach (var v in Vertices)
             {
@@ -61,7 +70,7 @@ namespace Generator3D
                 {
                     if (t.CircumSphereContains(v.Position))
                     {
-                        t.isBad = true;
+                        t.IsBad = true;
                         triangles.Add(new Triangle(t.A, t.B, t.C));
                         triangles.Add(new Triangle(t.A, t.B, t.D));
                         triangles.Add(new Triangle(t.A, t.D, t.C));
@@ -69,20 +78,20 @@ namespace Generator3D
                     }
                 }
 
-                for (int i = 0; i < triangles.Count;i++)
+                for (int i = 0; i < triangles.Count; i++)
                 {
                     for (int j = i + 1; j < triangles.Count; j++)
                     {
                         if (triangles[i] == triangles[j])
                         {
-                            triangles[i].isBad = true;
-                            triangles[j].isBad = true;
+                            triangles[i].IsBad = true;
+                            triangles[j].IsBad = true;
                         }
                     }
                 }
 
-                Tetras.RemoveAll(t => t.isBad);
-                triangles.RemoveAll(t => t.isBad);
+                Tetras.RemoveAll(t => t.IsBad);
+                triangles.RemoveAll(t => t.IsBad);
 
                 foreach (var t in triangles)
                 {
@@ -90,25 +99,31 @@ namespace Generator3D
                 }
             }
 
-            Tetras.RemoveAll(t => t.Contains(v1) || t.Contains(v2) || t.Contains(v3) || t.Contains(v4));
+            List<Triangle> trians = new List<Triangle>();
+            foreach (var t in Tetras)
+            {
+                trians.Add(new Triangle(t.A, t.B, t.C));
+                trians.Add(new Triangle(t.D, t.B, t.C));
+                trians.Add(new Triangle(t.A, t.D, t.C));
+                trians.Add(new Triangle(t.A, t.B, t.D));
+            }
+
+
+            trians.RemoveAll(t =>
+                t.ContainsVertex(v1) || t.ContainsVertex(v2) || t.ContainsVertex(v3) || t.ContainsVertex(v4));
 
             HashSet<Edge> edges = new HashSet<Edge>();
 
-            foreach (var t in Tetras)
+            foreach (var t in trians)
             {
                 Edge ab = new Edge(t.A, t.B);
                 Edge bc = new Edge(t.B, t.C);
                 Edge ca = new Edge(t.C, t.A);
-                Edge ad = new Edge(t.A, t.D);
-                Edge bd = new Edge(t.B, t.D);
-                Edge cd = new Edge(t.C, t.D);
-                if(edges.Add(ab)) Edges.Add(ab);
-                if(edges.Add(bc)) Edges.Add(bc);
-                if(edges.Add(ca)) Edges.Add(ca);
-                if(edges.Add(ad)) Edges.Add(ad);
-                if(edges.Add(bd)) Edges.Add(bd);
-                if(edges.Add(cd)) Edges.Add(cd);
+                if (edges.Add(ab)) Edges.Add(ab);
+                if (edges.Add(bc)) Edges.Add(bc);
+                if (edges.Add(ca)) Edges.Add(ca);
             }
+
         }
     }
 }

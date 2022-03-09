@@ -24,19 +24,14 @@ namespace Generator3D
         //chance of generating extra edge between rooms
         public float cycleChance;
 
+        [Header("Pathfinding")]
+        public float stairsCost;
+        public float emptyCellCost;
+        public float roomCost;
+        public float pathCost;
+        
         //seed for generation
+        [Header("Seed")]
         public string seed;
-
-
-
-        public void SetFields(GenerationSettings3D settings)
-        {
-            size = settings.size;
-            roomCount = settings.roomCount;
-            extraTries = settings.extraTries;
-            roomMinSize = settings.roomMinSize;
-            roomMaxSize = settings.roomMaxSize;
-            cycleChance = settings.cycleChance;
-        }
     }
 }

@@ -69,7 +69,12 @@ namespace Generator2D
         {
             if (grid[x, y] != CellState.Empty)
             {
-                Instantiate(prefs.Floor, new Vector3(x, 0, y) * prefs.sizeInUnits, Quaternion.identity);
+                Vector3 p = new Vector3(
+                    x*prefs.sizeInUnits.x,
+                    0,
+                    y*prefs.sizeInUnits.z
+                    );
+                Instantiate(prefs.Floor, p, Quaternion.identity);
             }
         }
     }

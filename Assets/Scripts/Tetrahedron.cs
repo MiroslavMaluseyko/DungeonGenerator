@@ -10,7 +10,7 @@ namespace Graphs
         public Vertex C;
         public Vertex D;
 
-        public bool isBad;
+        public bool IsBad;
 
         private Vector3 sphereCenter;
         private float sphereRadiusSqr;
