@@ -15,9 +15,7 @@ namespace Generator3D
         Empty,
         Room,
         Path,
-        StairsStart,
-        StairsEnd,
-        StairsBot,
+        Stairs,
         Space
     }
 }

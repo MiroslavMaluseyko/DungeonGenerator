@@ -1,6 +1,4 @@
-﻿using System.Xml;
-using UnityEngine;
-using UnityEngine.PlayerLoop;
+﻿using UnityEngine;
 
 namespace Generator2D
 {

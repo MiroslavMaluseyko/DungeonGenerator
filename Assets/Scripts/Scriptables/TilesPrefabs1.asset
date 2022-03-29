@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfbfa6970fb92f741be09f0c646430cf, type: 3}
-  m_Name: TilesPrefabs
+  m_Name: TilesPrefabs1
   m_EditorClassIdentifier: 
   sizeInUnits: {x: 4, y: 5, z: 4}
   Wall: {fileID: 936655011711489263, guid: 5e10be2f5a748844dbd0b2b7e6fafd4a, type: 3}
