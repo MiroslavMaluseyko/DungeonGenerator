@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
     public class Stairs
     {
@@ -39,10 +39,10 @@ namespace Generator3D
             
             while (pos.y < endPos.y)
             {                                                                    
+                res.Add(pos);
+                res.Add(pos + up);
                 res.Add(pos + Direction);
                 res.Add(pos + Direction + up);
-                res.Add(pos + Direction * 2);
-                res.Add(pos + Direction * 2 + up);
                                                                                  
                 pos += 2 * Direction + 2 * up;
             }

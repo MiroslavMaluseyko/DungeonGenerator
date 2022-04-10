@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfbfa6970fb92f741be09f0c646430cf, type: 3}
+  m_Name: TilesPrefabs
+  m_EditorClassIdentifier: 
+  sizeInUnits: {x: 4, y: 5, z: 4}
+  Wall: {fileID: 1811674550373808238, guid: b9d98650a95ee384eaf185f03861b788, type: 3}
+  Door: {fileID: 9074594807983055082, guid: 15745f8b70e5d524183539fa272d90a3, type: 3}
+  Floor: {fileID: 677249354464238387, guid: 739380a714a28314191d061c455cfea8, type: 3}
+  WallWithDoor: {fileID: 3593363150256028610, guid: a8c7f304d6130f74b80178e46fa9482c, type: 3}
+  LowStairs: {fileID: 8275206674196858621, guid: ff45cbec96889264fbde87cc8e4f5cba, type: 3}
+  HighStairs: {fileID: 5472678429677466835, guid: e610238cfb9a4b749a5f3ddc77ae4f1f, type: 3}
+  Ceiling: {fileID: 6637861757203025585, guid: e9b7b0327bc5bec4fae4296460fd4b2d, type: 3}
+  Column: {fileID: 4342671295866585447, guid: 27f210ed52b6c0f409f410ac194d0a7c, type: 3}

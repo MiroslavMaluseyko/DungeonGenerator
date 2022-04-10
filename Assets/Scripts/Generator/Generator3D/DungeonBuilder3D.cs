@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Schema;
-using Generator2D;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
-using Object = System.Object;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
 
     public class DungeonBuilder3D : MonoBehaviour
@@ -19,7 +14,7 @@ namespace Generator3D
 
         [SerializeField] private bool testMode;
         
-        public Generator3D Generator { get; private set; }
+        public Generator.Generator3D.Generator3D Generator { get; private set; }
         public Vector3 TSize { get; private set; }
         private Grid3D<DungeonTile> tiles;
         private List<Room> rooms;
@@ -63,17 +58,16 @@ namespace Generator3D
                         Vector3Int dir = Vector3Int.back;
                         for (int i = 0; i < 4; i++)
                         {
-                            if (tiles[x, y, z][dir] == WallType.Wall)
+                            if (i < 2 || (x == tiles.Size.x - 1 || z == tiles.Size.z - 1))
                             {
-                                Instantiate(prefs.Wall, pos, Quaternion.Euler(0,i*90,0), tilesParent);
-                            }
-
-
-                            if (i < 2)
-                            {
+                                Vector3 nPos;
+                                if (tiles[x, y, z][dir] == WallType.Wall)
+                                {
+                                    Instantiate(prefs.Wall, pos, Quaternion.Euler(0,i*90,0), tilesParent);
+                                }
                                 if (tiles[x, y, z][dir] == WallType.Door)
                                 {
-                                    Vector3 nPos = new Vector3(
+                                    nPos = new Vector3(
                                         pos.x + dir.x * .5f * TSize.x,
                                         pos.y,
                                         pos.z + dir.z * .5f * TSize.z);
@@ -134,13 +128,14 @@ namespace Generator3D
                         {
                             Vector3 p = new Vector3(
                                 x * TSize.x, 
-                                (y+1) * TSize.y - .1f, 
+                                (y+1) * TSize.y - .2f, 
                                 z * TSize.z);
-                            Instantiate(prefs.Floor, p, Quaternion.Euler(180,0,0), tilesParent);
+                            Instantiate(prefs.Ceiling, p, Quaternion.identity, tilesParent);
                         }
                     }
                 }
             }
+
         }
 
 

@@ -10,7 +10,8 @@ public class TilesPrefabs : ScriptableObject
     public GameObject Door;
     public GameObject Floor;
     public GameObject WallWithDoor;
-    public GameObject Pillar;
     public GameObject LowStairs;
     public GameObject HighStairs;
+    public GameObject Ceiling;
+    public GameObject Column;
 }

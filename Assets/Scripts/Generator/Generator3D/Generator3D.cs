@@ -1,13 +1,11 @@
 ﻿using System;
-using Graphs;
 using System.Collections.Generic;
+using Graphs;
 using UnityEngine;
-using UnityEngine.WSA;
 using Random = System.Random;
-using Node = Generator3D.PathFinder3D.Node;
-using Object = UnityEngine.Object;
 
-namespace Generator3D
+
+namespace Generator.Generator3D
 {
     public class Generator3D
     {
@@ -170,7 +168,7 @@ namespace Generator3D
                         Stairs stairs = new Stairs(p1 + horDir, p2 - horDir);
                         if (!StairsList.Exists(st => st == stairs))
                         {
-                            StairsList.Add(stairs);
+                            StairsList.Add(stairs); 
                         }
                     }
                     
@@ -307,11 +305,18 @@ namespace Generator3D
                                 Tiles[pos][dir] = WallType.Wall;
                                 Tiles[pos + dir][-dir] = WallType.Wall;
                             }
+                            else
+                            if(!Tiles.InBounds(pos + dir))
+                            {
+                                Tiles[pos][dir] = WallType.Wall;
+                            }
 
                             dir.Set(dir.z, dir.y, -dir.x);
                         }
                         dir = Vector3Int.up;
-                        if (Tiles.InBounds(pos + dir) && Tiles[pos + dir].State == CellState.Empty)
+                        if (Tiles.InBounds(pos + dir) && 
+                            (Tiles[pos + dir].State == CellState.Empty || 
+                             Tiles[pos + dir].State == CellState.Stairs))
                         {
                             Tiles[pos].Ceiling = CeilingType.Ceiling;
                             Tiles[pos + dir].Floor = FloorType.Floor;
@@ -328,7 +333,7 @@ namespace Generator3D
         }
         
         
-        private float Heuristic(Node n1, Node n2)
+        private float Heuristic(PathFinder3D.Node n1, PathFinder3D.Node n2)
         {
             
             float res = Vector3.Distance(n1.Position,n2.Position);
@@ -353,7 +358,7 @@ namespace Generator3D
             return res;
         }
 
-        private List<Vector3Int> Neighbours(Node node)
+        private List<Vector3Int> Neighbours(PathFinder3D.Node node)
         {
             List<Vector3Int> res = new List<Vector3Int>();
 
@@ -370,8 +375,8 @@ namespace Generator3D
                 neigh = node.Position + v;
                 if(Tiles.InBounds(neigh) &&
                    (Tiles[neigh].State == CellState.Room ||
-                    Tiles[neigh].State == CellState.Empty ||
-                    Tiles[neigh].State == CellState.Path))
+                   Tiles[neigh].State == CellState.Empty ||
+                   Tiles[neigh].State ==CellState.Path))
                 {
                     res.Add(neigh);
                 }
@@ -387,8 +392,7 @@ namespace Generator3D
                     neigh = node.Position + dir + v + v + v;
                     if (Tiles.InBounds(neigh) && CanBeStairs(neigh, node.Position))
                     {
-                        if (Tiles[neigh].State != CellState.Room)
-                            res.Add(neigh);
+                        res.Add(neigh);
                     }
 
                     v.Set(v.z, v.y, -v.x);

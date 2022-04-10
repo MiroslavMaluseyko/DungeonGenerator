@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
 
     [CreateAssetMenu(fileName = "GenerationSettings3D", menuName = "Settings Block/Generation Settings 3D")]

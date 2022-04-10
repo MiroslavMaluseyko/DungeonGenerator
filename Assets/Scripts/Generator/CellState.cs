@@ -8,7 +8,7 @@
     }
 }
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
     public enum CellState
     {

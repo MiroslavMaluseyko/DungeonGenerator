@@ -3,7 +3,7 @@ using Graphs;
 using System;
 using UnityEngine;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
 
     public class Delaunay3D

@@ -2,9 +2,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Generator.Generator3D;
 using Generator2D;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
     public class PathFinder3D
     {

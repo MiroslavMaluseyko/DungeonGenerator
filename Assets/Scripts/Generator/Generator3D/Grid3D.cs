@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Generator3D
+namespace Generator.Generator3D
 {
     public class Grid3D<T>
     {
